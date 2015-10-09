@@ -51,7 +51,7 @@ function getClubLists(){
   Logger.log(myMgClubs);
   Logger.log(myClubs);
 
-  return clubInfo, myMgClubs, myClubs;
+  return [clubInfo, myMgClubs, myClubs];
 }
 
 
@@ -75,7 +75,34 @@ function getMemberLists(myId){
   }
   return outHTML;
     Logger.log(outHTML);
+}
 
+
+/* joinThisClub
+ *
+ * Adds a user to the club list
+ */
+function joinThisClub(clubID) {
+  var recordID = clubID+thisUser;
+  var status = '0';
+  var timeStamp = new Date();
+  //Open Sheet - check sheet for data
+
+  var thisSS = SpreadsheetApp.openById(myClubsSSId).getSheetByName(studentclubsSheetName);
+  var studentClubData = thisSS.getDataRange().getValues();
+
+  if (ArrayLib.filterByValue(studentClubData, 0, recordID).length < 1){
+    var lock = LockService.getScriptLock();
+    lock.waitLock(30000);
+
+    //Get the survey data.
+    var lastRow = thisSS.getLastRow();
+    var targetRange = thisSS.getRange(thisSS.getLastRow()+1, 1, 1, 7).setValues([[recordID, status, timeStamp, thisUser, "", clubID, ""]]);
+    lock.releaseLock();
+  }
+
+  var newLists = getClubLists()
+  return newLists;
 
 }
 
