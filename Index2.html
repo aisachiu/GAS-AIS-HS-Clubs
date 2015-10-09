@@ -33,7 +33,7 @@
 <script>
 // This runs when page is loaded
 $(function() {
-  google.script.run.withSuccessHandler(loadInfo).getClubLists();
+  google.script.run.withSuccessHandler(showThings).getClubLists();
 
   $(document).on('click', '.btn-members', function(e){
     $('.btn-members').removeClass('active');
@@ -46,15 +46,6 @@ $(function() {
 var clubInfo = new Array();
 var myMgClubs = new Array();
 var myClubs = new Array();
-var clubListSheetName = 'Club List';
-var clubListIDcol = 11;
-var studentclubsSheetName = 'Student-Clubs';
-var studentEmailCol = 3;
-var clubMemberIDcol = 5;
-var managerClubsSheetName = 'Club-Managers';
-var managerEmailCol = 2;
-var entityTitle = 'Extra Curricular Activities'; // used in titles throughout app
-var appTitle = 'AIS Extra Curricular Manager';
 
 
 function showThings(things){
@@ -69,68 +60,62 @@ function showMembers(html){
 
 }
 
-/* function loadInfo
- *
- * Called to initiate all arrays that hold data after reading from Spreadsheet.
- */
-function loadInfo(a,b,c) {
-
-  clubInfo = a.slice();
-  myMgClubs = b.slice();
-  myClubs = c.slice();
-
-
-//Create table to load Managed Activities, if there are any.
-  if(myMgClubs.length > 0) { // If there are clubs I manage...
-    //Create the section and headers
+function loadInfo(m) {
+  if(myMgClubs.length > 0) {
     outHTML ='<div class="row"><div class="col-md-12"><h2>Activities I manage</h2></div></div><div class="row"><div class="col-md-6 col-sm-12"><table class="table table-striped">';
-    for (var i=0; i < myMgClubs.length; i++) { // For each club I manage...
-      var thisClubDetails = $.grep(clubInfo, function(v,i) {return v[clubListIDcol] === myMgClubs[i][1];}); //Get club details
-      outHTML += '<tr><td><h3>'+thisClubDetails[0][1]+'</h3></td><td><button class="btn btn-info btn-members" data-id="'+myMgClubs[i][1]+'" data-toggle="button">Members</button></td></tr>';
-      for (var j=0; j < thisClubDetails[0].length; j++) { //add the details to myMgClubs
+
+    for (var i=0; i < myMgClubs.length; i++) { // Get Club Details
+      var thisClubDetails = ArrayLib.filterByValue(clubInfo, clubListIDcol, myMgClubs[i][1]);
+      outHTML += '<tr><td><h3>'+thisClubDetails[0][1]+'</h3></td><td><button class="btn btn-info btn-members" data-id="'+myMgClubs[i][1]+'" data-toggle="button">Members</button></td></tr>'
+      for (var j=0; j < thisClubDetails[0].length; j++) {
           myMgClubs[i].push(thisClubDetails[0][j]);
+
       }
     }
-      outHTML += '</table></div><div class="col-md-6 col-sm-12" id="ActivityMembersSection"></div></div>'; //close the section
+      outHTML += '</table></div><div class="col-md-6 col-sm-12" id="ActivityMembersSection"></div></div>';
   }
 
-//Create table to show activities already joined
+
+
+
   if(myClubs.length > 0) {
     outHTML +='<div class="row"><div class="col-md-12"><h2>Activities I have joined</h2><table class="table table-striped">';
     //Add table header
-    for (var i=0; i < myClubs.length; i++) { // For each club I am in
-      var thisClubDetails = $.grep(clubInfo, function(v,i) {return v[clubListIDcol] === myClubs[i][5];}); //Get Club Details
+    for (var i=0; i < myClubs.length; i++) { // Get Club Details
+      var thisClubDetails = ArrayLib.filterByValue(clubInfo, clubListIDcol, myClubs[i][5]);
       outHTML += '<tr><td><span class="label label-success">'+myClubs[i][1]+'</span></td><td>'+thisClubDetails[0][1]+'</td><td>'+thisClubDetails[0][5]+'</td><td>'+thisClubDetails[0][6]+'</td><td>'+thisClubDetails[0][7]+'</td><td>'+thisClubDetails[0][8]+'</td></tr>'
-      for (var j=0; j < thisClubDetails[0].length; j++) { //add details to myClubs
+      for (var j=0; j < thisClubDetails[0].length; j++) {
           myClubs[i].push(thisClubDetails[0][j]);
+
       }
     }
     outHTML += '</table></div></div>';
   }
+
+
   outHTML += '</table>';
 
-//Create available activities section
-    //Find clubs I haven't joined (Remove clubs I am a member of from full clubs list)
-    var NewclubInfo = new Array();
-    for (var x=1; x < clubInfo.length; x++) { //Find activities not joined yet
-      var matching = $.grep(myClubs, function(v,i) {return v[clubMemberIDcol] === clubInfo[x][clubListIDcol]);
-      if(matching<0){
-        NewclubInfo.push(clubInfo[x]);
-      }
-    }
 
-  //Section and headers
+
+
+
   var outHTML2 = '<div class="row"><div class="col-md-12"><h2>Available Activities</h2><table class="table table-striped"><thead><tr><th>Activity Name</th><th>Faculty Advisor / Coach</th><th>Meeting day</th><th>Meeting Time</th><th>Meeting Place</th><th>Type</th><th>Action</th></tr><thead><tbody>';
-  for(var k=0; k < NewclubInfo.length; k++){ //For each
+
+  for(var k=0; k < NewclubInfo.length; k++){
+
     outHTML2 += '<tr><td>'+NewclubInfo[k][1]+'</td>';
     for (var m=5; m <=9; m++) outHTML2 += '<td>'+NewclubInfo[k][m]+'</td>';
     outHTML2 += '<td><button class="btn btn-warning btn-join" data-clubid="'+NewclubInfo[i][1]+'" data-memberid="'+thisUser+'" data-toggle="button">Join</button></td></tr>'
   }
   outHTML2 += '</tbody></table></div></div>'
+
   outHTML += outHTML2;
-  showThings([outHTML]);
+
+  return [outHTML];
 
 }
+
+
 
 </script>
 </body>

@@ -40,85 +40,18 @@ function doGet() {
  */
 function getClubLists(){
 
-
-  var outHTML ='';
-
   var thisSS = SpreadsheetApp.openById(myClubsSSId);
   var clubInfo = thisSS.getSheetByName(clubListSheetName).getDataRange().getValues();
   var clubMgrs = thisSS.getSheetByName(managerClubsSheetName).getDataRange().getValues();
   var clubMembers = thisSS.getSheetByName(studentclubsSheetName).getDataRange().getValues();
-
   var myMgClubs = ArrayLib.filterByValue(clubMgrs, managerEmailCol, thisUser);
-
-
   var myClubs = ArrayLib.filterByValue(clubMembers, studentEmailCol, thisUser);
 
-  //Created Activities List for Joining
-  //
-  var NewclubInfo = new Array();
-  for (var x=1; x < clubInfo.length; x++) { //Find activities not joined yet
-    var matching = ArrayLib.indexOf(myClubs, clubMemberIDcol, clubInfo[x][clubListIDcol]);
-    Logger.log([clubInfo[x][clubListIDcol],matching]);
-    if(matching<0){
-      NewclubInfo.push(clubInfo[x]);
-    }
-  }
+  Logger.log(clubInfo);
+  Logger.log(myMgClubs);
+  Logger.log(myClubs);
 
-  Logger.log(NewclubInfo);
-
-
-  if(myMgClubs.length > 0) {
-    outHTML ='<div class="row"><div class="col-md-12"><h2>Activities I manage</h2></div></div><div class="row"><div class="col-md-6 col-sm-12"><table class="table table-striped">';
-
-    for (var i=0; i < myMgClubs.length; i++) { // Get Club Details
-      var thisClubDetails = ArrayLib.filterByValue(clubInfo, clubListIDcol, myMgClubs[i][1]);
-      outHTML += '<tr><td><h3>'+thisClubDetails[0][1]+'</h3></td><td><button class="btn btn-info btn-members" data-id="'+myMgClubs[i][1]+'" data-toggle="button">Members</button></td></tr>'
-      for (var j=0; j < thisClubDetails[0].length; j++) {
-          myMgClubs[i].push(thisClubDetails[0][j]);
-
-      }
-    }
-      outHTML += '</table></div><div class="col-md-6 col-sm-12" id="ActivityMembersSection"></div></div>';
-  }
-
-
-
-
-  if(myClubs.length > 0) {
-    outHTML +='<div class="row"><div class="col-md-12"><h2>Activities I have joined</h2><table class="table table-striped">';
-    //Add table header
-    for (var i=0; i < myClubs.length; i++) { // Get Club Details
-      var thisClubDetails = ArrayLib.filterByValue(clubInfo, clubListIDcol, myClubs[i][5]);
-      outHTML += '<tr><td><span class="label label-success">'+myClubs[i][1]+'</span></td><td>'+thisClubDetails[0][1]+'</td><td>'+thisClubDetails[0][5]+'</td><td>'+thisClubDetails[0][6]+'</td><td>'+thisClubDetails[0][7]+'</td><td>'+thisClubDetails[0][8]+'</td></tr>'
-      for (var j=0; j < thisClubDetails[0].length; j++) {
-          myClubs[i].push(thisClubDetails[0][j]);
-
-      }
-    }
-    outHTML += '</table></div></div>';
-  }
-
-
-  outHTML += '</table>';
-
-
-
-
-
-  var outHTML2 = '<div class="row"><div class="col-md-12"><h2>Available Activities</h2><table class="table table-striped"><thead><tr><th>Activity Name</th><th>Faculty Advisor / Coach</th><th>Meeting day</th><th>Meeting Time</th><th>Meeting Place</th><th>Type</th><th>Action</th></tr><thead><tbody>';
-
-  for(var k=0; k < NewclubInfo.length; k++){
-
-    outHTML2 += '<tr><td>'+NewclubInfo[k][1]+'</td>';
-    for (var m=5; m <=9; m++) outHTML2 += '<td>'+NewclubInfo[k][m]+'</td>';
-    outHTML2 += '<td><button class="btn btn-warning btn-join" data-clubid="'+NewclubInfo[i][1]+'" data-memberid="'+thisUser+'" data-toggle="button">Join</button></td></tr>'
-  }
-  outHTML2 += '</tbody></table></div></div>'
-
-  outHTML += outHTML2;
-
-  return [outHTML];
-
+  return clubInfo, myMgClubs, myClubs;
 }
 
 
