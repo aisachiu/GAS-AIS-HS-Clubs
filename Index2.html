@@ -60,17 +60,8 @@ function showMembers(html){
 
 }
 
-/* function loadInfo
- *
- * Called to initiate all arrays that hold data after reading from Spreadsheet.
- */
-function loadInfo(a,b,c) {
-
-  clubInfo = a.slice();
-  myMgClubs = b.slice();
-  myClubs = c.slice();
-
-  if(myMgClubs.length > 0) { //Create table to load Managed Activities, if there are any.
+function loadInfo(m) {
+  if(myMgClubs.length > 0) {
     outHTML ='<div class="row"><div class="col-md-12"><h2>Activities I manage</h2></div></div><div class="row"><div class="col-md-6 col-sm-12"><table class="table table-striped">';
 
     for (var i=0; i < myMgClubs.length; i++) { // Get Club Details
@@ -84,7 +75,9 @@ function loadInfo(a,b,c) {
       outHTML += '</table></div><div class="col-md-6 col-sm-12" id="ActivityMembersSection"></div></div>';
   }
 
-//Create table to show activities already joined
+
+
+
   if(myClubs.length > 0) {
     outHTML +='<div class="row"><div class="col-md-12"><h2>Activities I have joined</h2><table class="table table-striped">';
     //Add table header
@@ -98,7 +91,13 @@ function loadInfo(a,b,c) {
     }
     outHTML += '</table></div></div>';
   }
+
+
   outHTML += '</table>';
+
+
+
+
 
   var outHTML2 = '<div class="row"><div class="col-md-12"><h2>Available Activities</h2><table class="table table-striped"><thead><tr><th>Activity Name</th><th>Faculty Advisor / Coach</th><th>Meeting day</th><th>Meeting Time</th><th>Meeting Place</th><th>Type</th><th>Action</th></tr><thead><tbody>';
 
