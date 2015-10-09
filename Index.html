@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Manage <?= entityTitle; ?></title>
+
+
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/material.min.css">
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/roboto.min.css">-->
+
+    <base target="_top">
+
+  </head>
+<body>
+<div class="container">
+<div class="jumbotron"><h1><?= appTitle?></h1><small>Manage <?= entityTitle; ?></small></div>
+  <?!= include('NavHead') ?>
+
+  <div class="row">
+    <div class="container">
+
+      <div class="col-12" id="stuff">
+        <div class="alert alert-info">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+     <?!= include('editabletable') ?>
+<script>
+// This runs when page is loaded
+$(function() {
+  google.script.run.withSuccessHandler(showThings).getClubLists();
+
+  $(document).on('click', '.btn-members', function(e){
+    $('.btn-members').removeClass('active');
+    $(this).addClass('active');
+    $('#ActivityMembersSection').append('<div class="alert alert-info">Loading...</div>');
+    google.script.run.withSuccessHandler(showMembers).getMemberLists($(this).data('id'));
+  });
+});
+
+function showThings(things){
+  var indlist = $('#stuff');
+  indlist.empty();
+  indlist.append(things[0]);
+}
+
+function showMembers(html){
+  $('#ActivityMembersSection').empty()
+                              .append(html);
+
+}
+
+
+</script>
+</body>
+</html>
